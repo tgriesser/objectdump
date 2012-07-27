@@ -1,0 +1,23 @@
+{
+  "name": "ObjectDump",
+  "version": "0.0.1",
+  "description": "stringify a javascript object, so it can be saved and read from a file",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha -R spec"
+  },
+  "dependencies": {
+    "underscore": ">=1.3.1"
+  },
+  "devDependencies" : {
+    "should" : ">=0.6.0",
+    "mocha": "1.0.x",
+    "chai": "1.1.x"
+  },
+  "keywords": [
+    "object",
+    "stringify"
+  ],
+  "author": "Tim Griesser",
+  "license": "MIT"
+}
