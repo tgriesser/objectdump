@@ -18,6 +18,13 @@
     "object",
     "stringify"
   ],
-  "author": "Tim Griesser",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/tgriesser/objectdump.git"
+  },
+  "author": {
+    "name" : "Tim Griesser",
+    "email" : "tgriesser10@gmail.com"
+  },
   "license": "MIT"
 }
