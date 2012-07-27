@@ -3,7 +3,7 @@
  * Turns an object into something we can save to a file...
  * @author  - Tim Griesser
  * @license - MIT
- * @link - https://github.org/tgriesser/objectDump
+ * @link - https://github.org/tgriesser/objectdump
  */
 _ = require('underscore');
 

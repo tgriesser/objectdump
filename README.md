@@ -1,4 +1,4 @@
-[![Build Status](https://secure.travis-ci.org/tgriesser/ObjectDump.png)](http://travis-ci.org/tgriesser/ObjectDump)
+[![Build Status](https://secure.travis-ci.org/tgriesser/objectdump.png)](http://travis-ci.org/tgriesser/objectdump)
 
 # ObjectDump
 
