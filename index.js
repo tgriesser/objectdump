@@ -1,17 +1,19 @@
 
 /**
  * Turns an object into something we can save to a file...
- * @author  - Tim Griesser
- * @license - MIT
- * @link - https://github.org/tgriesser/objectdump
+ * https://github.com/tgriesser/objectdump
+ * 
+ * @author   Tim Griesser
+ * @license  MIT
  */
-_ = require('underscore');
 
-var ObjectDump = function(input, options) {
+var _ = require('underscore');
+
+function ObjectDump(input, options) {
   options = (options || {})
-  if (_.isNumber(options.spacing)) this.spacing = options.spacing;
   if (_.isString(options.prefix)) this.prefix = options.prefix;
   if (_.isString(options.suffix)) this.suffix = options.suffix;
+  if (_.isNumber(options.spacing)) this.spacing = options.spacing;
   this.out = this.dumpString(input);
 }
 
