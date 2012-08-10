@@ -2,15 +2,17 @@
 /**
  * Turns an object into something we can save to a file...
  * https://github.com/tgriesser/objectdump
- * 
  * @author   Tim Griesser
  * @license  MIT
  */
 
+/*jshint curly:false, eqnull:true, strict:false, node:true, laxcomma:true, white:false*/
+/*global require:false exports:false */
+
 var _ = require('underscore');
 
 function ObjectDump(input, options) {
-  options = (options || {})
+  options = (options || {});
   if (_.isString(options.prefix)) this.prefix = options.prefix;
   if (_.isString(options.suffix)) this.suffix = options.suffix;
   if (_.isNumber(options.spacing)) this.spacing = options.spacing;
@@ -33,6 +35,7 @@ _.extend(ObjectDump.prototype, {
 
   // Checks the type of the string
   dumpString : function(obj) {
+    if (obj === void 0) return 'undefined';
     if (_.isFunction(obj)) return obj.toString();
     if (_.isArray(obj)) return this.dumpArr(obj);
     if (_.isString(obj))
@@ -47,9 +50,7 @@ _.extend(ObjectDump.prototype, {
     stack = [];
     for (k in obj) {
       stack.push(
-        this.repeat(" ", this.spacing) 
-        + this.dumpString(k) + ': '
-        + this.dumpString(obj[k]).replace(/\n/g, "\n" + this.repeat(' ', this.spacing)))
+        this.repeat(" ", this.spacing) + this.dumpString(k) + ': '+ this.dumpString(obj[k]).replace(/\n/g, "\n" + this.repeat(' ', this.spacing)));
     }
     return '{' + "\n" + stack.join(",\n") + "\n}";
   },

@@ -1,4 +1,5 @@
-
+/*jshint curly:false, eqnull:true, node:true, laxcomma:true, white:false*/
+/*global it:false describe:false before:false after:false */
 var objectDump = require('../index.js').objectDump
 , ObjectDump = require('../index.js').ObjectDump
 , fs = require('fs')
@@ -6,26 +7,30 @@ var objectDump = require('../index.js').objectDump
 , assert = require('chai').assert
 , should = require('should');
 
+(function(){
+"use strict";
+
 // Object
 var one = {
   a : function(){
     return 'a';
-  },
-  b : {
-    b1 : 1,
-    b2 : 2
+  }
+  , b : {
+    b1 : 1
+    , b2 : 2
   },
   "c" : [],
   d : ['a', 'b', 'c', function(){
     return 'a';
-  }]
+  }],
+  e : undefined
 };
 
 // Function
 var two = function(){
   return function(){
     return 'success';
-  }
+  };
 };
 
 // Array
@@ -36,11 +41,11 @@ var three = ['one', 'two', 3, function(){
 describe('objectDump', function(){
 
   it('the first argument should accept any type and return a string', function(){
-    expect(objectDump(one)).to.be.a('string')
-    expect(objectDump(two)).to.be.a('string')
-    expect(objectDump(three)).to.be.a('string')
-    expect(objectDump(4)).to.be.a('string')
-    expect(objectDump('five')).to.be.a('string')
+    expect(objectDump(one)).to.be.a('string');
+    expect(objectDump(two)).to.be.a('string');
+    expect(objectDump(three)).to.be.a('string');
+    expect(objectDump(4)).to.be.a('string');
+    expect(objectDump('five')).to.be.a('string');
   });
 
   it('the second argument takes an options hash, setting the prefix, suffix, and spacing', function(){
@@ -50,8 +55,8 @@ describe('objectDump', function(){
     var err = objectDump(one, 4);
     expect(test).to.be.a('string');
     expect(test.indexOf('var test =')).to.equal(0);
-    expect(err.indexOf('4')).to.not.equal(0)
-  })
+    expect(err.indexOf('4')).to.not.equal(0);
+  });
 
   it('should provide a string which can be saved to a file', function(){
     return true;
@@ -68,38 +73,38 @@ describe('objectDump', function(){
       fs.writeFile(__dirname + '/output-test.js', dump, 'utf-8', function(){
         output = require('./output-test.js').test;
         done();
-      })
-    })
+      });
+    });
 
     after(function(done){
       fs.unlink(__dirname + '/output-test.js', function(){
         done();
-      })
-    })
+      });
+    });
 
     it('output.a should return "a"', function(){
-      expect(output.a()).to.equal('a')
-    })
+      expect(output.a()).to.equal('a');
+    });
 
     it('output.b should equal one.b', function(){
-      assert.deepEqual(output.b, one.b)
-    })
+      assert.deepEqual(output.b, one.b);
+    });
 
     it('output.c should be an empty array', function(){
-      assert.deepEqual(output.c, one.c)
-    })
+      assert.deepEqual(output.c, one.c);
+    });
 
     it('output.d should be an array equaling one.d', function(){
       var errors = 0;
       for (var i=0, l=one.d.length; i<l; i++) {
         if (typeof(one.d[i]) === 'function') {
-          assert.equal(one.d[i](), output.d[i]())
+          assert.equal(one.d[i](), output.d[i]());
         } else {
-          assert.equal(one.d[i], output.d[i])
+          assert.equal(one.d[i], output.d[i]);
         }
       }
-      expect(errors).to.equal(0)
-    })
+      expect(errors).to.equal(0);
+    });
   });
 
 });
@@ -144,3 +149,5 @@ describe('ObjectDump', function(){
   });
 
 });
+
+}).call(this);
