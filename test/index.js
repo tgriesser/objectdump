@@ -1,14 +1,12 @@
 /*jshint curly:false, eqnull:true, node:true, laxcomma:true, white:false*/
 /*global it:false describe:false before:false after:false */
-var objectDump = require('../index.js').objectDump
-, ObjectDump = require('../index.js').ObjectDump
+
+"use strict";
+
+var objectDump = require('../index.js')
 , fs = require('fs')
 , expect = require('chai').expect
-, assert = require('chai').assert
-, should = require('should');
-
-(function(){
-"use strict";
+, assert = require('chai').assert;
 
 // Object
 var one = {
@@ -38,21 +36,21 @@ var three = ['one', 'two', 3, function(){
   return 'four';
 }];
 
-describe('objectDump', function(){
+describe('objectDump.render()', function(){
 
   it('the first argument should accept any type and return a string', function(){
-    expect(objectDump(one)).to.be.a('string');
-    expect(objectDump(two)).to.be.a('string');
-    expect(objectDump(three)).to.be.a('string');
-    expect(objectDump(4)).to.be.a('string');
-    expect(objectDump('five')).to.be.a('string');
+    expect(objectDump(one).render()).to.be.a('string');
+    expect(objectDump(two).render()).to.be.a('string');
+    expect(objectDump(three).render()).to.be.a('string');
+    expect(objectDump(4).render()).to.be.a('string');
+    expect(objectDump('five').render()).to.be.a('string');
   });
 
-  it('the second argument takes an options hash, setting the prefix, suffix, and spacing', function(){
-    var test = objectDump(one, {
+  it('the render argument takes an options hash, setting the prefix, suffix, and spacing', function(){
+    var test = objectDump(one).render({
       prefix : 'var test = '
     });
-    var err = objectDump(one, 4);
+    var err = objectDump(one).render(4);
     expect(test).to.be.a('string');
     expect(test.indexOf('var test =')).to.equal(0);
     expect(err.indexOf('4')).to.not.equal(0);
@@ -64,7 +62,7 @@ describe('objectDump', function(){
 
   describe('reading the output file back into a javascript object', function(done){
     var output
-    , dump = objectDump(one, {
+    , dump = objectDump(one).render({
       prefix : 'exports.test = ',
       suffix : ';'
     });
@@ -109,45 +107,26 @@ describe('objectDump', function(){
 
 });
 
-describe('ObjectDump', function(){
-  var a = new ObjectDump(one);
-  var b = new ObjectDump('one', {
-    'prefix' : 'name',
-    'suffix' : ';',
-    'spacing' : 4
-  });
-  
-  it('is a constructor', function(){
-    if ((a instanceof ObjectDump) !== true) {
-      throw new Error("ObjectDump is not a constructor");
-    }
-  });
-  
-  it('has a property out, a string containing the output', function(){
-    expect(a.out).to.be.a('string');
-  });
+describe('objectDump.deepStringify()', function(){
 
-  it('has a property prefix, a string containing the prefix to the object', function(){
-    expect(a.prefix).to.equal('');
-    expect(b.prefix).to.equal('name');
-  });
+  var a = objectDump(function(){ return 'test'; })
+  , b = objectDump({'a':[1, '2', {'3' : 3}, function(){ return 'test'; }], 'b':function(){ return 'test'; }})
+  , resp = {'a':[1, '2', {'3' : 3}, 'function (){ return \'test\'; }'], 'b':'function (){ return \'test\'; }'};
 
-  it('has a property suffix, a string containing the prefix to the object', function(){
-    expect(a.suffix).to.equal('');
-    expect(b.suffix).to.equal(';');
-  });
-
-  it('has a property spacing, equal to the third argument, defaulting to 2', function(){
-    expect(a.spacing).to.equal(2);
-    expect(b.spacing).to.equal(4);
-  });
-  
-  describe('#repeat', function(){
-    it('takes two arguments, the pattern to be repeated and the number of repetitions', function(){
-      expect(a.repeat('t', 5)).to.equal('ttttt');
-    });
+  it('should stringify any functions, keeping javascript objects and arrays intact', function(){
+    expect(a.deepStringify()).to.equal("function (){ return 'test'; }");
+    assert.deepEqual(b.deepStringify(), resp);
   });
 
 });
 
-}).call(this);
+describe('objectDump.repeat()', function(){
+  
+  var a = objectDump();
+
+  it('takes two arguments, the pattern to be repeated and the number of repetitions', function(){
+    expect(a.repeat('t', 5)).to.equal('ttttt');
+  });
+
+});
+
