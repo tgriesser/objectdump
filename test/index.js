@@ -3,7 +3,7 @@
 
 "use strict";
 
-var objectDump = require('../index.js')
+var ObjectDump = require('../index.js')
 , fs = require('fs')
 , expect = require('chai').expect
 , assert = require('chai').assert;
@@ -36,21 +36,21 @@ var three = ['one', 'two', 3, function(){
   return 'four';
 }];
 
-describe('objectDump.render()', function(){
+describe('ObjectDump().render()', function(){
 
   it('the first argument should accept any type and return a string', function(){
-    expect(objectDump(one).render()).to.be.a('string');
-    expect(objectDump(two).render()).to.be.a('string');
-    expect(objectDump(three).render()).to.be.a('string');
-    expect(objectDump(4).render()).to.be.a('string');
-    expect(objectDump('five').render()).to.be.a('string');
+    expect(new ObjectDump(one).render()).to.be.a('string');
+    expect(new ObjectDump(two).render()).to.be.a('string');
+    expect(new ObjectDump(three).render()).to.be.a('string');
+    expect(new ObjectDump(4).render()).to.be.a('string');
+    expect(new ObjectDump('five').render()).to.be.a('string');
   });
 
   it('the render argument takes an options hash, setting the prefix, suffix, and spacing', function(){
-    var test = objectDump(one).render({
+    var test = new ObjectDump(one).render({
       prefix : 'var test = '
     });
-    var err = objectDump(one).render(4);
+    var err = new ObjectDump(one).render(4);
     expect(test).to.be.a('string');
     expect(test.indexOf('var test =')).to.equal(0);
     expect(err.indexOf('4')).to.not.equal(0);
@@ -62,7 +62,7 @@ describe('objectDump.render()', function(){
 
   describe('reading the output file back into a javascript object', function(done){
     var output
-    , dump = objectDump(one).render({
+    , dump = new ObjectDump(one).render({
       prefix : 'exports.test = ',
       suffix : ';'
     });
@@ -107,10 +107,10 @@ describe('objectDump.render()', function(){
 
 });
 
-describe('objectDump.deepStringify()', function(){
+describe('ObjectDump().deepStringify()', function(){
 
-  var a = objectDump(function(){ return 'test'; })
-  , b = objectDump({'a':[1, '2', {'3' : 3}, function(){ return 'test'; }], 'b':function(){ return 'test'; }})
+  var a = new ObjectDump(function(){ return 'test'; })
+  , b = new ObjectDump({'a':[1, '2', {'3' : 3}, function(){ return 'test'; }], 'b':function(){ return 'test'; }})
   , resp = {'a':[1, '2', {'3' : 3}, 'function (){ return \'test\'; }'], 'b':'function (){ return \'test\'; }'};
 
   it('should stringify any functions, keeping javascript objects and arrays intact', function(){
@@ -120,12 +120,10 @@ describe('objectDump.deepStringify()', function(){
 
 });
 
-describe('objectDump.repeat()', function(){
+describe('ObjectDump.repeat()', function(){
   
-  var a = objectDump();
-
   it('takes two arguments, the pattern to be repeated and the number of repetitions', function(){
-    expect(a.repeat('t', 5)).to.equal('ttttt');
+    expect(ObjectDump.repeat('t', 5)).to.equal('ttttt');
   });
 
 });

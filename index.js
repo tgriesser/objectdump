@@ -15,6 +15,17 @@ function ObjectDump(input) {
   this.input = input;
 }
 
+// Simple repetition of an item
+ObjectDump.repeat = function(pattern, count) {
+  if (count < 1) return '';
+  var result = '';
+  while (count > 0) {
+    if (count & 1) result += pattern;
+    count >>= 1, pattern += pattern;
+  }
+  return result;
+};
+
 _.extend(ObjectDump.prototype, {
 
   // The output of the ObjectDump
@@ -49,7 +60,7 @@ _.extend(ObjectDump.prototype, {
     stack = [];
     for (k in obj) {
       stack.push(
-        this.repeat(" ", this.spacing) + this.dumpString(k) + ': '+ this.dumpString(obj[k]).replace(/\n/g, "\n" + this.repeat(' ', this.spacing)));
+        ObjectDump.repeat(" ", this.spacing) + this.dumpString(k) + ': '+ this.dumpString(obj[k]).replace(/\n/g, "\n" + ObjectDump.repeat(' ', this.spacing)));
     }
     return '{' + "\n" + stack.join(",\n") + "\n}";
   }
@@ -62,17 +73,6 @@ _.extend(ObjectDump.prototype, {
       stack.push(this.dumpString(arr[i]));
     }
     return '[' + stack.join(',') + ']';
-  }
-
-  // Simple repetition of an item
-  , repeat : function(pattern, count) {
-    if (count < 1) return '';
-    var result = '';
-    while (count > 0) {
-      if (count & 1) result += pattern;
-      count >>= 1, pattern += pattern;
-    }
-    return result;
   }
 
   // Ensure all functions are converted to string
@@ -103,6 +103,5 @@ _.extend(ObjectDump.prototype, {
 
 });
 
-module.exports = function(arg) {
-  return new ObjectDump(arg);
-};
+
+module.exports = ObjectDump;
