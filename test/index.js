@@ -21,7 +21,8 @@ var one = {
   d : ['a', 'b', 'c', function(){
     return 'a';
   }],
-  e : undefined
+  e : undefined,
+  f : 'function'
 };
 
 // Function
@@ -104,6 +105,15 @@ describe('ObjectDump().render()', function(){
       }
       expect(errors).to.equal(0);
     });
+
+    it('output.e should be undefined', function(){
+      expect(output.e).to.be.an('undefined');
+    });
+
+    it('output.f should be a string equaling function', function(){
+      expect(output.f).to.be.a('string');
+    });
+
   });
 
 });

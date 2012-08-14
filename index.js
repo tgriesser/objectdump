@@ -9,7 +9,8 @@
 /*jshint curly:false, eqnull:true, strict:false, node:true, laxcomma:true, white:false*/
 /*global require:false exports:false */
 
-var _ = require('underscore');
+var _ = require('underscore')
+, funcRegex = /function\s?\(/;
 
 function ObjectDump(input) {
   this.input = input;
@@ -60,7 +61,7 @@ _.extend(ObjectDump.prototype, {
     if (_.isFunction(obj)) return this.uniqFn(obj.toString());
     if (_.isArray(obj)) return this.dumpArr(obj);
     if (_.isString(obj))
-      return obj.indexOf('function') !== -1 ? this.uniqFn(obj) : '"' + obj.replace(/\"/g, '\\"') + '"';
+      return funcRegex.test(obj) ? this.uniqFn(obj) : '"' + obj.replace(/\"/g, '\\"') + '"';
     if (_.isObject(obj)) return this.dumpObj(obj);
     return obj.toString();
   }
