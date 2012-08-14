@@ -61,13 +61,14 @@ describe('ObjectDump().render()', function(){
   });
 
   describe('reading the output file back into a javascript object', function(done){
-    var output
-    , dump = new ObjectDump(one).render({
-      prefix : 'exports.test = ',
-      suffix : ';'
-    });
+    
+    var output;
 
     before(function(done){
+      var dump = new ObjectDump(one).render({
+        prefix : 'exports.test = ',
+        suffix : ';'
+      });
       fs.writeFile(__dirname + '/output-test.js', dump, 'utf-8', function(){
         output = require('./output-test.js').test;
         done();

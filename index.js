@@ -43,15 +43,31 @@ _.extend(ObjectDump.prototype, {
   // The depth of indentation for each object level
   , spacing : 2
 
+  // Allows easily pretty-printing the JS Object,
+  // while maintaining significant whitespace in the functions
+  , functionCache : {}
+
+  // Caches the unique function placeholder
+  , uniqFn : function(obj) {
+    var uniq = _.uniqueId('%%objectdump');
+    this.functionCache[uniq] = obj;
+    return uniq;
+  }
+
   // Checks the type of the string
   , dumpString : function(obj) {
     if (obj === void 0) return 'undefined';
-    if (_.isFunction(obj)) return obj.toString();
+    if (_.isFunction(obj)) return this.uniqFn(obj.toString());
     if (_.isArray(obj)) return this.dumpArr(obj);
     if (_.isString(obj))
-      return obj.indexOf('function') !== -1 ? obj : '"' + obj.replace(/\"/g, '\\"') + '"';
+      return obj.indexOf('function') !== -1 ? this.uniqFn(obj) : '"' + obj.replace(/\"/g, '\\"') + '"';
     if (_.isObject(obj)) return this.dumpObj(obj);
     return obj.toString();
+  }
+
+  // Formats the string by spacing after newlines
+  , prepDump : function(obj) {
+    return this.dumpString(obj).replace(/\n/g, "\n" + ObjectDump.repeat(' ', this.spacing));
   }
 
   // Dumps the current object to a string
@@ -60,7 +76,7 @@ _.extend(ObjectDump.prototype, {
     stack = [];
     for (k in obj) {
       stack.push(
-        ObjectDump.repeat(" ", this.spacing) + this.dumpString(k) + ': '+ this.dumpString(obj[k]).replace(/\n/g, "\n" + ObjectDump.repeat(' ', this.spacing)));
+        ObjectDump.repeat(" ", this.spacing) + this.dumpString(k) + ': '+ this.prepDump(obj[k]));
     }
     return '{' + "\n" + stack.join(",\n") + "\n}";
   }
@@ -98,7 +114,15 @@ _.extend(ObjectDump.prototype, {
     if (_.isString(options.suffix)) this.suffix = options.suffix;
     if (_.isNumber(options.spacing)) this.spacing = options.spacing;
 
-    return this.prefix + this.dumpString(this.input) + this.suffix;
+    var that = this
+    , fnRegex = new RegExp('(%%objectdump[0-9]+)', 'g');
+
+    var out = this.prefix + this.dumpString(this.input).replace(fnRegex, function(item) {
+      return that.functionCache[item];
+    }) + this.suffix;
+
+
+    return out;
   }
 
 });
