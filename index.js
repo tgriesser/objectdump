@@ -122,11 +122,9 @@ _.extend(ObjectDump.prototype, {
       return that.stringCache[item];
     }) + this.suffix;
 
-
     return out;
   }
 
 });
-
 
 module.exports = ObjectDump;
