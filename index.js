@@ -45,23 +45,23 @@ _.extend(ObjectDump.prototype, {
   , spacing : 2
 
   // Allows easily pretty-printing the JS Object,
-  // while maintaining significant whitespace in the functions
-  , functionCache : {}
+  // while maintaining significant whitespace in the string items
+  , stringCache : {}
 
   // Caches the unique function placeholder
-  , uniqFn : function(obj) {
+  , uniqStr : function(obj) {
     var uniq = _.uniqueId('%%objectdump');
-    this.functionCache[uniq] = obj;
+    this.stringCache[uniq] = obj;
     return uniq;
   }
 
   // Checks the type of the string
   , dumpString : function(obj) {
     if (obj === void 0) return 'undefined';
-    if (_.isFunction(obj)) return this.uniqFn(obj.toString());
+    if (_.isFunction(obj)) return this.uniqStr(obj.toString());
     if (_.isArray(obj)) return this.dumpArr(obj);
     if (_.isString(obj))
-      return funcRegex.test(obj) ? this.uniqFn(obj) : '"' + obj.replace(/\"/g, '\\"') + '"';
+      return this.uniqStr(funcRegex.test(obj) ? obj : '"' + obj.replace(/\"/g, '\\"') + '"');
     if (_.isObject(obj)) return this.dumpObj(obj);
     return obj.toString();
   }
@@ -119,7 +119,7 @@ _.extend(ObjectDump.prototype, {
     , fnRegex = new RegExp('(%%objectdump[0-9]+)', 'g');
 
     var out = this.prefix + this.dumpString(this.input).replace(fnRegex, function(item) {
-      return that.functionCache[item];
+      return that.stringCache[item];
     }) + this.suffix;
 
 
