@@ -1,99 +1,79 @@
+//    Objectdump
+//    Turns an object into something we can save to a file...
+//    https://github.com/tgriesser/objectdump
+//    @author   Tim Griesser
+//    @license  MIT
 
-/**
- * Turns an object into something we can save to a file...
- * https://github.com/tgriesser/objectdump
- * @author   Tim Griesser
- * @license  MIT
- */
+var _ = require('underscore');
+var funcRegex = /function\s?\(/;
 
-/*jshint curly:false, eqnull:true, strict:false, node:true, laxcomma:true, white:false*/
-/*global require:false exports:false */
-
-var _ = require('underscore')
-, funcRegex = /function\s?\(/;
-
-function ObjectDump(input) {
+var ObjectDump = function(input) {
   this.input = input;
-}
-
-// Simple repetition of an item
-ObjectDump.repeat = function(pattern, count) {
-  if (count < 1) return '';
-  var result = '';
-  while (count > 0) {
-    if (count & 1) result += pattern;
-    count >>= 1, pattern += pattern;
-  }
-  return result;
+  this.functionCache = {};
 };
 
 _.extend(ObjectDump.prototype, {
 
-  // The output of the ObjectDump
-  out : null
+  // The output of the "ObjectDump"
+  out : null,
 
   // The string to prefix the object with
-  , prefix : ''
+  prefix : '',
 
   // The string to suffix the object with
-  , suffix : ''
+  suffix : '',
 
   // The input string
-  , input : null
+  input : null,
 
   // The depth of indentation for each object level
-  , spacing : 2
-
-  // Allows easily pretty-printing the JS Object,
-  // while maintaining significant whitespace in the functions
-  , functionCache : {}
+  spacing : 2,
 
   // Caches the unique function placeholder
-  , uniqFn : function(obj) {
+  uniqFn : function(obj) {
     var uniq = _.uniqueId('%%objectdump');
     this.functionCache[uniq] = obj;
     return uniq;
-  }
+  },
 
   // Checks the type of the string
-  , dumpString : function(obj) {
+  dumpString : function(obj) {
     if (obj === void 0) return 'undefined';
     if (_.isFunction(obj)) return this.uniqFn(obj.toString());
     if (_.isArray(obj)) return this.dumpArr(obj);
     if (_.isString(obj))
       return funcRegex.test(obj) ? this.uniqFn(obj) : '"' + obj.replace(/\"/g, '\\"') + '"';
     if (_.isObject(obj)) return this.dumpObj(obj);
-    return obj.toString();
-  }
+    return (obj ? obj.toString() : '%%objectdumpisNull');
+  },
 
   // Formats the string by spacing after newlines
-  , prepDump : function(obj) {
-    return this.dumpString(obj).replace(/\n/g, "\n" + ObjectDump.repeat(' ', this.spacing));
-  }
+  prepDump : function(obj) {
+    return this.dumpString(obj).replace(/\n/g, "\n" + repeat(' ', this.spacing));
+  },
 
   // Dumps the current object to a string
-  , dumpObj : function(obj) {
+  dumpObj : function(obj) {
     var stack, k;
     stack = [];
     for (k in obj) {
-      stack.push(
-        ObjectDump.repeat(" ", this.spacing) + this.dumpString(k) + ': '+ this.prepDump(obj[k]));
+      stack.push(repeat(" ", this.spacing) + this.dumpString(k) + ': '+ this.prepDump(obj[k]));
     }
     return '{' + "\n" + stack.join(",\n") + "\n}";
-  }
+  },
 
   // Ensure each item in the array is output properly
-  , dumpArr : function(arr) {
+  dumpArr : function(arr) {
     var stack;
     stack = [];
     for (var i=0, l=arr.length; i<l; i++) {
       stack.push(this.dumpString(arr[i]));
     }
     return '[' + stack.join(',') + ']';
-  }
+  },
 
   // Ensure all functions are converted to string
-  , deepStringify : function(input) {
+  deepStringify : function(input) {
     var obj = (input || this.input);
     if (_.isFunction(obj)) return obj.toString();
     if (_.isObject(obj) || _.isArray(obj)) {
@@ -106,25 +86,44 @@ _.extend(ObjectDump.prototype, {
         return memo;
       }, obj, this);
     }
-  }
+  },
 
   // Render the output of the function
-  , render : function(options) {
+  toString : function(options) {
     options = (options || {});
     if (_.isString(options.prefix)) this.prefix = options.prefix;
     if (_.isString(options.suffix)) this.suffix = options.suffix;
     if (_.isNumber(options.spacing)) this.spacing = options.spacing;
 
-    var that = this
-    , fnRegex = new RegExp('(%%objectdump[0-9]+)', 'g');
+    var that = this;
+    var fnRegex = new RegExp('(%%objectdump[0-9]+)', 'g');
 
     var out = this.prefix + this.dumpString(this.input).replace(fnRegex, function(item) {
       return that.functionCache[item];
-    }) + this.suffix;
+    }).replace(/%%objectdumpisNull/g, null) + this.suffix;
 
     return out;
   }
 
 });
+
+// Add the "ObjectDump capabilities to another object"
+ObjectDump.extend = function (object) {
+  var target = (object.prototype ? object.prototype : this);
+  target.toString = function (options) {
+    return new ObjectDump(this).toString(options);
+  };
+};
+
+// Simple repetition of an item.
+var repeat = function(pattern, count) {
+  if (count < 1) return '';
+  var result = '';
+  while (count > 0) {
+    if (count & 1) result += pattern;
+    count >>= 1, pattern += pattern;
+  }
+  return result;
+};
 
 module.exports = ObjectDump;

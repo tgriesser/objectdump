@@ -1,21 +1,20 @@
-/*jshint curly:false, eqnull:true, node:true, laxcomma:true, white:false*/
-/*global it:false describe:false before:false after:false */
 
-"use strict";
+var ObjectDump = require('../index.js');
+var _          = require('underscore');
+var Backbone   = require('backbone');
 
-var ObjectDump = require('../index.js')
-, fs = require('fs')
-, expect = require('chai').expect
-, assert = require('chai').assert;
+var fs = require('fs');
+var expect = require('chai').expect;
+var assert = require('chai').assert;
 
 // Object
 var one = {
   a : function(){
     return 'a';
-  }
-  , b : {
-    b1 : 1
-    , b2 : 2
+  },
+  b : {
+    b1 : 1,
+    b2 : 2
   },
   "c" : [],
   d : ['a', 'b', 'c', function(){
@@ -37,21 +36,21 @@ var three = ['one', 'two', 3, function(){
   return 'four';
 }];
 
-describe('ObjectDump().render()', function(){
+describe('ObjectDump#toString', function(){
 
   it('the first argument should accept any type and return a string', function(){
-    expect(new ObjectDump(one).render()).to.be.a('string');
-    expect(new ObjectDump(two).render()).to.be.a('string');
-    expect(new ObjectDump(three).render()).to.be.a('string');
-    expect(new ObjectDump(4).render()).to.be.a('string');
-    expect(new ObjectDump('five').render()).to.be.a('string');
+    expect(new ObjectDump(one).toString()).to.be.a('string');
+    expect(new ObjectDump(two).toString()).to.be.a('string');
+    expect(new ObjectDump(three).toString()).to.be.a('string');
+    expect(new ObjectDump(4).toString()).to.be.a('string');
+    expect(new ObjectDump('five').toString()).to.be.a('string');
   });
 
-  it('the render argument takes an options hash, setting the prefix, suffix, and spacing', function(){
-    var test = new ObjectDump(one).render({
+  it('the toString argument takes an options hash, setting the prefix, suffix, and spacing', function(){
+    var test = new ObjectDump(one).toString({
       prefix : 'var test = '
     });
-    var err = new ObjectDump(one).render(4);
+    var err = new ObjectDump(one).toString(4);
     expect(test).to.be.a('string');
     expect(test.indexOf('var test =')).to.equal(0);
     expect(err.indexOf('4')).to.not.equal(0);
@@ -66,7 +65,7 @@ describe('ObjectDump().render()', function(){
     var output;
 
     before(function(done){
-      var dump = new ObjectDump(one).render({
+      var dump = new ObjectDump(one).toString({
         prefix : 'exports.test = ',
         suffix : ';'
       });
@@ -118,7 +117,7 @@ describe('ObjectDump().render()', function(){
 
 });
 
-describe('ObjectDump().deepStringify()', function(){
+describe('ObjectDump#deepStringify', function(){
 
   var a = new ObjectDump(function(){ return 'test'; })
   , b = new ObjectDump({'a':[1, '2', {'3' : 3}, function(){ return 'test'; }], 'b':function(){ return 'test'; }})
@@ -131,11 +130,21 @@ describe('ObjectDump().deepStringify()', function(){
 
 });
 
-describe('ObjectDump.repeat()', function(){
-  
-  it('takes two arguments, the pattern to be repeated and the number of repetitions', function(){
-    expect(ObjectDump.repeat('t', 5)).to.equal('ttttt');
-  });
+describe('ObjectDump#extend', function () {
+
+  it('Should allow the ObjectDump capabilities on other objects', function (done) {
+    ObjectDump.extend(Backbone.Model);
+    var m = new Backbone.Model();
+    fs.writeFile(__dirname + '/backbone-1.0.js', 'module.exports = ' + m, function () {
+      var bbModel = require('./backbone-1.0');
+      assert.deepEqual(_.keys(bbModel), [ 'cid', 'attributes', '_changing', '_previousAttributes', 'changed', '_pending', 'on', 'once', 'off', 'trigger', 'stopListening', 'listenTo', 'listenToOnce', 'bind', 'unbind', 'validationError', 'idAttribute', 'initialize', 'toJSON', 'sync', 'get', 'escape', 'has', 'set', 'unset', 'clear', 'hasChanged', 'changedAttributes', 'previous', 'previousAttributes', 'fetch', 'save', 'destroy', 'url', 'parse', 'clone', 'isNew', 'isValid', '_validate', 'keys', 'values', 'pairs', 'invert', 'pick', 'omit', 'toString' ]);
+      fs.unlink(__dirname + '/backbone-1.0.js', function () {
+        done();
+      });
+    });
 
 });
+  
+  
 
+});
