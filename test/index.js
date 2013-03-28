@@ -5,7 +5,7 @@ var Backbone   = require('backbone');
 
 var fs = require('fs');
 var expect = require('chai').expect;
-var assert = require('chai').assert;
+var assert = require('assert');
 
 // Object
 var one = {
@@ -21,7 +21,8 @@ var one = {
     return 'a';
   }],
   e : undefined,
-  f : 'function'
+  f : 'function',
+  g : new Date()
 };
 
 // Function
@@ -38,15 +39,15 @@ var three = ['one', 'two', 3, function(){
 
 describe('ObjectDump#toString', function(){
 
-  it('the first argument should accept any type and return a string', function(){
-    expect(new ObjectDump(one).toString()).to.be.a('string');
-    expect(new ObjectDump(two).toString()).to.be.a('string');
-    expect(new ObjectDump(three).toString()).to.be.a('string');
-    expect(new ObjectDump(4).toString()).to.be.a('string');
-    expect(new ObjectDump('five').toString()).to.be.a('string');
+  it('should return a string for any type', function(){
+    assert.ok(_.isString(new ObjectDump(one).toString()));
+    assert.ok(_.isString(new ObjectDump(two).toString()));
+    assert.ok(_.isString(new ObjectDump(three).toString()));
+    assert.ok(_.isString(new ObjectDump(4).toString()));
+    assert.ok(_.isString(new ObjectDump('five').toString()));
   });
 
-  it('the toString argument takes an options hash, setting the prefix, suffix, and spacing', function(){
+  it('takes an options hash, with prefix, suffix, and spacing', function(){
     var test = new ObjectDump(one).toString({
       prefix : 'var test = '
     });
@@ -112,22 +113,19 @@ describe('ObjectDump#toString', function(){
     it('output.f should be a string equaling function', function(){
       expect(output.f).to.be.a('string');
     });
-
   });
 
 });
 
-describe('ObjectDump#deepStringify', function(){
-
-  var a = new ObjectDump(function(){ return 'test'; })
-  , b = new ObjectDump({'a':[1, '2', {'3' : 3}, function(){ return 'test'; }], 'b':function(){ return 'test'; }})
-  , resp = {'a':[1, '2', {'3' : 3}, 'function (){ return \'test\'; }'], 'b':'function (){ return \'test\'; }'};
+describe('ObjectDump#deepStringify', function () {
+  var a = new ObjectDump(function(){ return 'test'; });
+  var b = new ObjectDump({'a':[1, '2', {'3' : 3}, function(){ return 'test'; }], 'b':function(){ return 'test'; }});
+  var resp = {'a':[1, '2', {'3' : 3}, 'function (){ return \'test\'; }'], 'b':'function (){ return \'test\'; }'};
 
   it('should stringify any functions, keeping javascript objects and arrays intact', function(){
-    expect(a.deepStringify()).to.equal("function (){ return 'test'; }");
+    assert.equal(a.deepStringify(), "function (){ return 'test'; }");
     assert.deepEqual(b.deepStringify(), resp);
   });
-
 });
 
 describe('ObjectDump#extend', function () {

@@ -39,6 +39,7 @@ _.extend(ObjectDump.prototype, {
   // Checks the type of the string
   dumpString : function(obj) {
     if (obj === void 0) return 'undefined';
+    if (_.isDate(obj)) return 'new Date()';
     if (_.isFunction(obj)) return this.uniqFn(obj.toString());
     if (_.isArray(obj)) return this.dumpArr(obj);
     if (_.isString(obj))
@@ -90,26 +91,25 @@ _.extend(ObjectDump.prototype, {
 
   // Render the output of the function
   toString : function(options) {
-    options = (options || {});
-    if (_.isString(options.prefix)) this.prefix = options.prefix;
-    if (_.isString(options.suffix)) this.suffix = options.suffix;
+    _.defaults(options || (options = {}), {
+      prefix: '',
+      suffix: ''
+    });
     if (_.isNumber(options.spacing)) this.spacing = options.spacing;
-
-    var that = this;
-    var fnRegex = new RegExp('(%%objectdump[0-9]+)', 'g');
-
-    var out = this.prefix + this.dumpString(this.input).replace(fnRegex, function(item) {
-      return that.functionCache[item];
-    }).replace(/%%objectdumpisNull/g, null) + this.suffix;
+    var dump = this;
+    var out = _.result(options, 'prefix') + 
+      this.dumpString(this.input).replace(/(%%objectdump[0-9]+)/g, function(item) {
+        return dump.functionCache[item];
+      }).replace(/%%objectdumpisNull/g, null) + _.result(this, 'suffix');
 
     return out;
   }
 
 });
 
-// Add the "ObjectDump capabilities to another object"
-ObjectDump.extend = function (object) {
-  var target = (object.prototype ? object.prototype : this);
+// Mixin the ObjectDump's `toString` into to another object
+ObjectDump.extend = function (Target) {
+  var target = (Target.prototype ? Target.prototype : Target);
   target.toString = function (options) {
     return new ObjectDump(this).toString(options);
   };
