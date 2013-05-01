@@ -1,11 +1,9 @@
-
-var ObjectDump = require('../index.js');
-var _          = require('underscore');
-var Backbone   = require('backbone');
-
 var fs = require('fs');
 var expect = require('chai').expect;
 var assert = require('assert');
+
+var ObjectDump = require('../index.js');
+var _          = require('underscore');
 
 // Object
 var one = {
@@ -126,23 +124,4 @@ describe('ObjectDump#deepStringify', function () {
     assert.equal(a.deepStringify(), "function (){ return 'test'; }");
     assert.deepEqual(b.deepStringify(), resp);
   });
-});
-
-describe('ObjectDump#extend', function () {
-
-  it('Should allow the ObjectDump capabilities on other objects', function (done) {
-    ObjectDump.extend(Backbone.Model);
-    var m = new Backbone.Model();
-    fs.writeFile(__dirname + '/backbone-1.0.js', 'module.exports = ' + m, function () {
-      var bbModel = require('./backbone-1.0');
-      assert.deepEqual(_.keys(bbModel), [ 'cid', 'attributes', '_changing', '_previousAttributes', 'changed', '_pending', 'on', 'once', 'off', 'trigger', 'stopListening', 'listenTo', 'listenToOnce', 'bind', 'unbind', 'validationError', 'idAttribute', 'initialize', 'toJSON', 'sync', 'get', 'escape', 'has', 'set', 'unset', 'clear', 'hasChanged', 'changedAttributes', 'previous', 'previousAttributes', 'fetch', 'save', 'destroy', 'url', 'parse', 'clone', 'isNew', 'isValid', '_validate', 'keys', 'values', 'pairs', 'invert', 'pick', 'omit', 'toString' ]);
-      fs.unlink(__dirname + '/backbone-1.0.js', function () {
-        done();
-      });
-    });
-
-});
-  
-  
-
 });
