@@ -49,6 +49,7 @@ ObjectDump.prototype = {
             return (isKey ? '' : "'") + obj.replace(/\'/g, "\\'") + (isKey ? '' : "'");
           })();
     if (_.isObject(obj)) return this.dumpObj(obj);
+    if (_.isNumber(obj)) return "'" + obj + "'";
     return (obj ? obj.toString() : '%%objectdumpisNull');
   },
 

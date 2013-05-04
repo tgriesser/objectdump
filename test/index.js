@@ -14,7 +14,7 @@ var one = {
     b1 : 1,
     b2 : 2
   },
-  "c" : [],
+  "c" : [0],
   d : ['a', 'b', 'c', function(){
     return 'a';
   }],
@@ -88,7 +88,7 @@ describe('ObjectDump#toString', function(){
       assert.deepEqual(output.b, one.b);
     });
 
-    it('output.c should be an empty array', function(){
+    it('output.c should be an array with one zero', function(){
       assert.deepEqual(output.c, one.c);
     });
 
