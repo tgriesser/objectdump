@@ -1,17 +1,17 @@
 {
   "name": "objectdump",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "stringify a javascript object, so it can be saved and read from a file",
   "main": "index.js",
   "scripts": {
     "test": "mocha -R spec test/index.js"
   },
   "dependencies": {
-    "underscore": "~1.4.4"
+    "underscore": "~1.5.1"
   },
   "devDependencies": {
-    "mocha": "1.0.x",
-    "chai": "1.1.x"
+    "mocha": "~1.12.0",
+    "chai": "~1.7.2"
   },
   "keywords": [
     "object",

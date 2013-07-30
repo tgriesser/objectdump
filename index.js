@@ -43,7 +43,7 @@ ObjectDump.prototype = {
     if (_.isFunction(obj)) return this.uniqFn(obj.toString());
     if (_.isArray(obj)) return this.dumpArr(obj);
     if (_.isString(obj))
-      return funcRegex.test(obj) ? this.uniqFn(obj) 
+      return funcRegex.test(obj) ? this.uniqFn(obj)
         : (function() {
             isKey = (isKey && isItAKey.test(obj));
             return (isKey ? '' : "'") + obj.replace(/\'/g, "\\'") + (isKey ? '' : "'");
@@ -102,7 +102,7 @@ ObjectDump.prototype = {
     });
     if (_.isNumber(options.spacing)) this.spacing = options.spacing;
     var dump = this;
-    var out = _.result(options, 'prefix') + 
+    var out = _.result(options, 'prefix') +
       this.dumpString(this.input).replace(/(%%objectdump[0-9]+)/g, function(item) {
         return dump.functionCache[item];
       }).replace(/%%objectdumpisNull/g, null) + _.result(this, 'suffix');
