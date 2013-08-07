@@ -1,6 +1,6 @@
 {
   "name": "objectdump",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "stringify a javascript object, so it can be saved and read from a file",
   "main": "index.js",
   "scripts": {

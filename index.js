@@ -10,6 +10,7 @@ var funcRegex = /function\s?\(/;
 var ObjectDump = function(input) {
   this.input = input;
   this.functionCache = {};
+  this.numberCache = {};
 };
 
 ObjectDump.prototype = {
@@ -49,7 +50,11 @@ ObjectDump.prototype = {
             return (isKey ? '' : "'") + obj.replace(/\'/g, "\\'") + (isKey ? '' : "'");
           })();
     if (_.isObject(obj)) return this.dumpObj(obj);
-    if (_.isNumber(obj)) return "'" + obj + "'";
+    if (_.isNumber(obj)) {
+      var numb = _.uniqueId('%%numberdump');
+      this.numberCache[numb] = obj;
+      return numb;
+    }
     return (obj ? obj.toString() : '%%objectdumpisNull');
   },
 
@@ -103,9 +108,14 @@ ObjectDump.prototype = {
     if (_.isNumber(options.spacing)) this.spacing = options.spacing;
     var dump = this;
     var out = _.result(options, 'prefix') +
-      this.dumpString(this.input).replace(/(%%objectdump[0-9]+)/g, function(item) {
+      this.dumpString(this.input)
+      .replace(/(%%objectdump[0-9]+)/g, function(item) {
         return dump.functionCache[item];
-      }).replace(/%%objectdumpisNull/g, null) + _.result(this, 'suffix');
+      })
+      .replace(/%%objectdumpisNull/g, null)
+      .replace(/(%%numberdump[0-9]+)/g, function(item) {
+        return dump.numberCache[item];
+      }) + _.result(this, 'suffix');
 
     return out;
   }
